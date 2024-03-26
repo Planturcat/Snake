@@ -7,4 +7,5 @@ public class Constants {
     public static final Color SCREEN_COLOR_BACKGROUND = new Color(22,33,20);
     public static final Color SCREEN_COLOR_MAIN= new Color(171, 127, 39);
     public static final Color SCREEN_COLOR_FOREGROUND= new Color(40, 65, 35);
+    public static final Color SNAKE_COLOR= new Color(235, 60, 0);
 }
