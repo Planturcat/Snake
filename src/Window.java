@@ -3,11 +3,12 @@ import java.awt.*;
 import java.sql.SQLOutput;
 
 public class Window extends JFrame implements Runnable {
+    public static  Window window = null;
     public  boolean isRunning ;
-    public static  int currentState;
-    public static Scene currentScene;
-    public static KL keyListener= new KL();
-    public static ML mouseListener = new ML();
+    public  int currentState;
+    public  Scene currentScene;
+    public  KL keyListener= new KL();
+    public  ML mouseListener = new ML();
     public Window(int width ,int height, String title){
         setSize(width,height);
         setTitle(title);
@@ -18,21 +19,27 @@ public class Window extends JFrame implements Runnable {
         addMouseListener(mouseListener);
         addMouseMotionListener(mouseListener);
         isRunning=true;
-        Window.changeState(0);
+        changeState(0);
     }
-    public static void changeState(int newState){
-        Window.currentState= newState;
-        switch (Window.currentState){
+    public static Window getWindow(){
+        if (Window.window== null){
+            Window.window= new Window(Constants.SCREEN_WIDTH,Constants.SCREEN_HEIGHT,Constants.TITLE);
+        }
+        return Window.window;
+    }
+    public  void changeState(int newState){
+        currentState= newState;
+        switch (currentState){
             case 0:
-                Window.currentScene= new MenuScene(Window.keyListener,Window.mouseListener );
+                currentScene= new MenuScene(keyListener,mouseListener );
                 break;
             case 1:
-                Window.currentScene=new GameScene();
+                currentScene=new GameScene();
 
                 break;
              default :
                 System.out.println(" Unknown scene");
-                Window.currentScene=null;
+                currentScene=null;
                 break;
         }
     }
@@ -48,6 +55,9 @@ public class Window extends JFrame implements Runnable {
     Graphics2D g2 =(Graphics2D) g;
     currentScene.draw(g);
     }
+    public void stop(){
+        isRunning = false;
+    }
 @Override
     public void run(){
         double lastFrameTime =0.0;
@@ -59,6 +69,7 @@ public class Window extends JFrame implements Runnable {
         }}catch (Exception e){
            e.printStackTrace();
        }
+       this.dispose();
     }
 
 }

@@ -21,7 +21,7 @@ public class MenuScene extends Scene{
                  exit=spriteSheet.getSubimage(0,0,233,93);
          ExitPressed=spriteSheet.getSubimage(264,0,233,93);
      } catch (Exception e) {
-         System.out.println("");
+         System.out.println(" ");
      }
      playCurrentImage=play;
      ExitCurrentImage=exit;
@@ -38,7 +38,7 @@ public class MenuScene extends Scene{
 playCurrentImage=playPressed;
 
             if (mouseListener.isPressed()) {
-                Window.changeState(1);
+                Window.getWindow().changeState(1);
             }
         } else {
             playCurrentImage=play;
@@ -49,14 +49,13 @@ playCurrentImage=playPressed;
                 mouseListener.getMouseY() < ExitRect.height / 2 + ExitRect.y) {
        ExitCurrentImage=ExitPressed;
             if (mouseListener.isPressed()) {
-                Window.changeState(1);
+                Window.getWindow().stop();
             }
         }else {
             ExitCurrentImage=exit;
         }
     }
-    public void stop(){
-    }
+
     @Override
     public void draw(Graphics g) {
     g.setColor(Constants.SCREEN_COLOR_MAIN);
