@@ -2,12 +2,12 @@ import java.awt.*;
 import java.awt.geom.Rectangle2D;
 
 public class Snake {
-    public Rect[] body= new Rect[100];
+    public Rect[] body= new Rect[1000];
     public double BodyWidth, BodyHeight;
     public int size;
     public int tail=0;
     public int head=0;
-    public double originalWaitBetweenUpdate=0.2f;
+    public double originalWaitBetweenUpdate=0.1f;
     public double waitTimeLeft = originalWaitBetweenUpdate;
 public Direction direction;
 public Rect bg;
@@ -17,14 +17,21 @@ public Rect bg;
         this.BodyWidth =bodyWidth;
         this.BodyHeight =bodyHeight;
     this.bg=bg;
-        for (int i = 0; i <= size; i++) {
+        for (int i = 0; i < size; i++) {
             Rect bodyPiece= new Rect(startx+i*bodyWidth,starty,bodyWidth,bodyHeight);
             body[i]= bodyPiece;
             head++;
         }
         head--;
+        if (intersectWithBOUNDS(body[head])) {
+            System.out.println("Initial wall collision!");
+            this.size--;
+            head--;
+            // Handle the collision (e.g., reduce size, change position)
+        }
     }
 public  void changeDirection(Direction newdirection){
+
     if(newdirection== Direction.RIGHT && direction!= Direction.LEFT)
 direction= newdirection;
     else if (newdirection== Direction.LEFT && direction!= Direction.RIGHT) {
@@ -34,6 +41,9 @@ direction= newdirection;
     } else if (newdirection== Direction.DOWN && direction!= Direction.UP) {
         direction= newdirection;
     }
+    if (intersectsWithself(body[head])){
+        Window.getWindow().changeState(0);
+    }
 }
 
     public  void update (double dt){
@@ -41,23 +51,23 @@ direction= newdirection;
                     waitTimeLeft-=dt;
                     return;
                 }
-        if (intersectsWithself()){
-            Window.getWindow().changeState(0);
-        }
+
                 waitTimeLeft=originalWaitBetweenUpdate;
     double newx=0;
     double newy=0;
-    if(direction==Direction.RIGHT){
+    if (direction==Direction.LEFT) {
+        newx = body[head].x - BodyWidth;
+        newy = body[head].y;
+    }
+    else if(direction==Direction.RIGHT){
         newx=body[head].x+BodyWidth;
         newy=body[head].y;
 
-    } else if (direction==Direction.LEFT) {
-        newx=body[head].x-BodyWidth;
-        newy=body[head].y;
     }
     else if (direction==Direction.UP) {
         newx=body[head].x;
         newy=body[head].y-BodyHeight;
+
     } else if (direction==Direction.DOWN) {
         newx=body[head].x;
         newy=body[head].y+BodyHeight;
@@ -92,33 +102,34 @@ direction= newdirection;
         }
 
         Rect newBodyPiece = new Rect(newx, newy, BodyWidth, BodyHeight);
-
+    if(!intersectsWithself(body[head])){
         tail = (tail - 1) % body.length;
-        body[tail] = newBodyPiece;
+        body[tail] = newBodyPiece;}
+    else System.out.println("hit myself");
     }
-    public boolean intersectsWithself(){
-        System.out.println("hit myself");
-        Rect headR= body[head];
-        for (int i = tail; i != head; i = (i + 1) % body.length) {
-        return intersectsrect(headR);}
-        return intersectWithBOUNDS(headR);
+    public boolean intersectsWithself(Rect headR){
+
+
+
+        return intersectsrect(headR)|| intersectWithBOUNDS(headR);
+
     }
     public boolean intersectsrect(Rect rect) {
-        System.out.println("hit myself");
+
         for (int i = tail; i != head; i = (i + 1) % body.length) {
             if(intersect(rect,body[i]))return true;
         }
         return false;
     }
 public  boolean intersectWithBOUNDS(Rect head){
-    System.out.println("hit wall");
-return(head.x<bg.x || (head.x+head.width)>bg.x+bg.width|| head.y<bg.y||(head.y+head.height)>bg.y+bg.height);
+return( head.x<bg.x||(head.x+head.width)>=bg.x+bg.width||
+        head.y<bg.y||(head.y+head.height)>=bg.y+bg.height);
 }
-public  boolean intersect(Rect r1, Rect r2){
-        return(r1.x >= r2.x && r1.x+
-                r1.width<= r2.x+r2.width &&
-                r1.y>=r2.y&&
-                r1.y+r1.height<=r2.y+r2.height);
+public  boolean intersect(Rect a, Rect b){
+    return (a.x < b.x + b.width &&
+            a.x + a.width > b.x &&
+            a.y < b.y + b.height &&
+            a.y + a.height > b.y);
 }
     public void draw(Graphics2D g2){
         for (int i = tail; i != head; i=(i+1)%body.length) {
@@ -127,9 +138,10 @@ public  boolean intersect(Rect r1, Rect r2){
             double subheight=(piece.height-6.0)/2.0;
             g2.setColor(Constants.SNAKE_COLOR);
             g2.fill(new Rectangle2D.Double(piece.x+2.0,piece.y+2.0,subwidth,subheight));
-            g2.fill(new Rectangle2D.Double(piece.x+4.0+subwidth,piece.y+2.0,subwidth,subheight));
+           g2.fill(new Rectangle2D.Double(piece.x+4.0+subwidth,piece.y+2.0,subwidth,subheight));
             g2.fill(new Rectangle2D.Double(piece.x+2.0,piece.y+4.0+subheight,subwidth,subheight));
             g2.fill(new Rectangle2D.Double(piece.x+4.0+subwidth,piece.y+4.0+subheight,subwidth,subheight));
+
         }
     }
 }

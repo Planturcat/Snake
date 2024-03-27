@@ -3,15 +3,15 @@ import java.awt.event.KeyEvent;
 import java.awt.geom.Rectangle2D;
 
 public class GameScene extends  Scene {
-    Rect background,foreground;
+    public Rect background,foreground;
     KL keylistener = new KL();
     Snake snake ;
     public Food food;
     public GameScene(KL keylistener){
-        this.keylistener=keylistener;
         background=new Rect(0,0, Constants.SCREEN_WIDTH,Constants.SCREEN_HEIGHT);
         foreground= new Rect(24,48,Constants.TILE_WIDTH*31,Constants.TILE_WIDTH*22);
-        snake =new Snake(2,48,48+24,24,24,foreground);
+        snake =new Snake(2,(int)foreground.width/2.0,foreground.y+60,24,24,foreground);
+        this.keylistener=keylistener;
     food= new Food(foreground,snake,12,12,Color.BLACK);
     food.spawn();
     }
@@ -26,8 +26,8 @@ public class GameScene extends  Scene {
         }else if (keylistener.isKeyPressed(KeyEvent.VK_RIGHT)) {
             snake.changeDirection(Direction.RIGHT);
         }
-        if(!food.isSpawned)food.spawn();
         food.update(dt);
+        if(!food.isSpawned)food.spawn();
         snake.update(dt);
 
     }
