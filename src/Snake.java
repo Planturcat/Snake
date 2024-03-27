@@ -7,15 +7,16 @@ public class Snake {
     public int size;
     public int tail=0;
     public int head=0;
-    public double originalWaitBetweenUpdate=0.1f;
+    public double originalWaitBetweenUpdate=0.2f;
     public double waitTimeLeft = originalWaitBetweenUpdate;
 public Direction direction;
+public Rect bg;
 
-    public Snake(int size,double startx,double starty,double bodyWidth,double bodyHeight){
+    public Snake(int size,double startx,double starty,double bodyWidth,double bodyHeight,Rect bg){
         this.size=size;
         this.BodyWidth =bodyWidth;
         this.BodyHeight =bodyHeight;
-
+    this.bg=bg;
         for (int i = 0; i <= size; i++) {
             Rect bodyPiece= new Rect(startx+i*bodyWidth,starty,bodyWidth,bodyHeight);
             body[i]= bodyPiece;
@@ -40,6 +41,9 @@ direction= newdirection;
                     waitTimeLeft-=dt;
                     return;
                 }
+        if (intersectsWithself()){
+            Window.getWindow().changeState(0);
+        }
                 waitTimeLeft=originalWaitBetweenUpdate;
     double newx=0;
     double newy=0;
@@ -68,6 +72,54 @@ direction= newdirection;
 
     }
 
+    public void grow() {
+        System.out.println("we are growing");
+        double newx = 0;
+        double newy = 0;
+        if (direction == Direction.RIGHT) {
+            newx = body[tail].x - BodyWidth;
+            newy = body[tail].y;
+
+        } else if (direction == Direction.LEFT) {
+            newx = body[tail].x + BodyWidth;
+            newy = body[tail].y;
+        } else if (direction == Direction.UP) {
+            newx = body[tail].x;
+            newy = body[tail].y + BodyHeight;
+        } else if (direction == Direction.DOWN) {
+            newx = body[tail].x;
+            newy = body[tail].y - BodyHeight;
+        }
+
+        Rect newBodyPiece = new Rect(newx, newy, BodyWidth, BodyHeight);
+
+        tail = (tail - 1) % body.length;
+        body[tail] = newBodyPiece;
+    }
+    public boolean intersectsWithself(){
+        System.out.println("hit myself");
+        Rect headR= body[head];
+        for (int i = tail; i != head; i = (i + 1) % body.length) {
+        return intersectsrect(headR);}
+        return intersectWithBOUNDS(headR);
+    }
+    public boolean intersectsrect(Rect rect) {
+        System.out.println("hit myself");
+        for (int i = tail; i != head; i = (i + 1) % body.length) {
+            if(intersect(rect,body[i]))return true;
+        }
+        return false;
+    }
+public  boolean intersectWithBOUNDS(Rect head){
+    System.out.println("hit wall");
+return(head.x<bg.x || (head.x+head.width)>bg.x+bg.width|| head.y<bg.y||(head.y+head.height)>bg.y+bg.height);
+}
+public  boolean intersect(Rect r1, Rect r2){
+        return(r1.x >= r2.x && r1.x+
+                r1.width<= r2.x+r2.width &&
+                r1.y>=r2.y&&
+                r1.y+r1.height<=r2.y+r2.height);
+}
     public void draw(Graphics2D g2){
         for (int i = tail; i != head; i=(i+1)%body.length) {
             Rect piece = body[i];

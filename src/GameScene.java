@@ -6,12 +6,14 @@ public class GameScene extends  Scene {
     Rect background,foreground;
     KL keylistener = new KL();
     Snake snake ;
+    public Food food;
     public GameScene(KL keylistener){
-        background=new Rect(0,0, Constants.SCREEN_WIDTH,Constants.SCREEN_HEIGHT);
-        foreground= new Rect(24,48,24*31,24*22);
-        snake =new Snake(2,48,48+24,24,24);
         this.keylistener=keylistener;
-
+        background=new Rect(0,0, Constants.SCREEN_WIDTH,Constants.SCREEN_HEIGHT);
+        foreground= new Rect(24,48,Constants.TILE_WIDTH*31,Constants.TILE_WIDTH*22);
+        snake =new Snake(2,48,48+24,24,24,foreground);
+    food= new Food(foreground,snake,12,12,Color.BLACK);
+    food.spawn();
     }
     @Override
     public void update(double dt) {
@@ -24,6 +26,8 @@ public class GameScene extends  Scene {
         }else if (keylistener.isKeyPressed(KeyEvent.VK_RIGHT)) {
             snake.changeDirection(Direction.RIGHT);
         }
+        if(!food.isSpawned)food.spawn();
+        food.update(dt);
         snake.update(dt);
 
     }
@@ -36,5 +40,6 @@ public class GameScene extends  Scene {
     g2.setColor(Constants.SCREEN_COLOR_FOREGROUND);
     g2.fill(new Rectangle2D.Double(foreground.x,foreground.y, foreground.width,foreground.height));
     snake.draw(g2);
+    food.draw(g2);
     }
 }
